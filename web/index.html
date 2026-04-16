@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Habla - Sofia Spanish Tutor</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="main-panel">
+      <header>
+        <h1>Habla</h1>
+        <div id="connection-status">Disconnected</div>
+      </header>
+
+      <div id="transcript-panel"></div>
+
+      <div id="controls">
+        <div id="agent-state">Waiting to connect</div>
+        <div id="button-row">
+          <button id="connect-btn">Connect</button>
+          <button id="debug-refresh-btn" disabled>Refresh Debug</button>
+          <button id="end-session-btn" disabled>End &amp; Compact</button>
+        </div>
+        <button id="ptt-btn" disabled>Hold to Speak</button>
+      </div>
+    </div>
+
+    <aside id="debug-panel">
+      <h2>Session State</h2>
+
+      <section class="debug-section">
+        <h3>Metrics</h3>
+        <div id="debug-metrics" class="debug-content">Not connected</div>
+      </section>
+
+      <section class="debug-section">
+        <h3>FSRS Items Due <span id="fsrs-count">0</span></h3>
+        <div id="debug-fsrs" class="debug-content">—</div>
+      </section>
+
+      <section class="debug-section">
+        <details>
+          <summary>Learner Core <span id="learner-version"></span></summary>
+          <pre id="debug-learner" class="debug-content">—</pre>
+        </details>
+      </section>
+
+      <section class="debug-section">
+        <details>
+          <summary>Tutor Core <span id="tutor-version"></span></summary>
+          <pre id="debug-tutor" class="debug-content">—</pre>
+        </details>
+      </section>
+
+      <section class="debug-section">
+        <details>
+          <summary>System Prompt</summary>
+          <pre id="debug-prompt" class="debug-content">—</pre>
+        </details>
+      </section>
+
+      <section class="debug-section" id="compaction-result-section" style="display: none;">
+        <h3>Compaction Result</h3>
+        <div id="compaction-status" class="debug-content"></div>
+        <details open>
+          <summary>Core Diff</summary>
+          <div id="compaction-diff" class="debug-content"></div>
+        </details>
+        <details>
+          <summary>FSRS Updates</summary>
+          <pre id="compaction-fsrs" class="debug-content">—</pre>
+        </details>
+      </section>
+    </aside>
+  </div>
+
+  <script src="https://unpkg.com/livekit-client@2/dist/livekit-client.umd.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
