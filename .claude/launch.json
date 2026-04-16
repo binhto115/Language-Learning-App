@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "token-server",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["tsx", "src/token-server.ts"],
+      "port": 3000,
+      "autoPort": false
+    }
+  ]
+}

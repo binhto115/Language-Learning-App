@@ -1,0 +1,35 @@
+{
+  "name": "habla-prototype",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "agent": "tsx src/agent.ts dev",
+    "server": "tsx src/token-server.ts",
+    "test-compaction": "tsx scripts/test-compaction.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.89.0",
+    "@livekit/agents": "1.2.6",
+    "@livekit/agents-plugin-cartesia": "latest",
+    "@livekit/agents-plugin-deepgram": "latest",
+    "@livekit/agents-plugin-openai": "latest",
+    "@livekit/agents-plugin-silero": "latest",
+    "dotenv": "^16.4.0",
+    "express": "^4.21.0",
+    "livekit-server-sdk": "^2.9.0",
+    "pg": "^8.13.0",
+    "ts-fsrs": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "@types/pg": "^8.11.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
+  }
+}
