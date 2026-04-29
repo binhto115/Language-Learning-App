@@ -1,82 +1,260 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Habla - Sofia Spanish Tutor</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <div id="app">
-    <div id="main-panel">
-      <header>
-        <h1>Habla</h1>
-        <div id="connection-status">Disconnected</div>
-      </header>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Habla — Session with Sofía</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
 
-      <div id="transcript-panel"></div>
+  <body>
+    <div class="bg-orb bg-orb-1"></div>
+    <div class="bg-orb bg-orb-2"></div>
+    <div class="bg-orb bg-orb-3"></div>
 
-      <div id="controls">
-        <div id="agent-state">Waiting to connect</div>
-        <div id="button-row">
-          <button id="connect-btn">Connect</button>
-          <button id="debug-refresh-btn" disabled>Refresh Debug</button>
-          <button id="end-session-btn" disabled>End &amp; Compact</button>
+    <div id="app">
+      <!-- LEFT: Main session panel -->
+      <div id="main-panel">
+        <header>
+          <div class="header-left">
+            <div class="logo">habla</div>
+            <div class="session-badge">
+              <span class="session-dot" id="session-dot"></span>
+              <span id="connection-status">Not connected</span>
+            </div>
+          </div>
+          <div class="header-right">
+            <div class="streak-chip">🔥 12</div>
+            <div class="level-chip">A1</div>
+          </div>
+        </header>
+
+        <!-- Sofia identity -->
+        <div class="sofia-bar">
+          <div class="sofia-orb-wrap">
+            <div class="sofia-orb" id="sofia-orb">
+              <svg
+                viewBox="0 0 60 60"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="30"
+                  cy="30"
+                  r="28"
+                  fill="url(#orbGrad)"
+                  stroke="rgba(255,255,255,0.25)"
+                  stroke-width="1.5"
+                />
+                <ellipse cx="22" cy="26" rx="3.5" ry="4" fill="#1a0a2e" />
+                <ellipse cx="38" cy="26" rx="3.5" ry="4" fill="#1a0a2e" />
+                <circle cx="23.5" cy="24.5" r="1.2" fill="white" />
+                <circle cx="39.5" cy="24.5" r="1.2" fill="white" />
+                <path
+                  d="M22 36 Q30 43 38 36"
+                  stroke="#1a0a2e"
+                  stroke-width="2.2"
+                  stroke-linecap="round"
+                  fill="none"
+                />
+                <ellipse
+                  cx="18"
+                  cy="34"
+                  rx="4"
+                  ry="2.5"
+                  fill="rgba(255,150,150,0.35)"
+                />
+                <ellipse
+                  cx="42"
+                  cy="34"
+                  rx="4"
+                  ry="2.5"
+                  fill="rgba(255,150,150,0.35)"
+                />
+                <defs>
+                  <radialGradient id="orbGrad" cx="35%" cy="30%">
+                    <stop offset="0%" stop-color="#d8b4fe" />
+                    <stop offset="45%" stop-color="#a855f7" />
+                    <stop offset="100%" stop-color="#6d28d9" />
+                  </radialGradient>
+                </defs>
+              </svg>
+            </div>
+            <div class="sofia-pulse-ring" id="sofia-pulse"></div>
+          </div>
+          <div class="sofia-info">
+            <div class="sofia-name">Sofía</div>
+            <div class="sofia-subtitle">Spanish tutor · Mexican accent</div>
+          </div>
+          <div class="agent-state-pill" id="agent-state-pill">
+            <span class="state-dot" id="state-dot"></span>
+            <span id="agent-state">Waiting to connect</span>
+          </div>
         </div>
-        <button id="ptt-btn" disabled>Hold to Speak</button>
+
+        <!-- Transcript -->
+        <div id="transcript-panel">
+          <div class="transcript-empty" id="empty-state">
+            <div class="empty-icon">💬</div>
+            <p>Your conversation with Sofía will appear here</p>
+            <p class="empty-sub">
+              Connect below, then hold the button to speak
+            </p>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div id="controls">
+          <div class="controls-row">
+            <button id="connect-btn" class="btn-connect">Connect</button>
+            <button id="debug-refresh-btn" class="btn-ghost" disabled>
+              ↻ Refresh
+            </button>
+            <button id="end-session-btn" class="btn-end" disabled>
+              End & Compact
+            </button>
+          </div>
+          <div class="ptt-wrap">
+            <button id="ptt-btn" disabled>
+              <svg
+                class="mic-icon"
+                width="26"
+                height="26"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <rect
+                  x="9"
+                  y="2"
+                  width="6"
+                  height="13"
+                  rx="3"
+                  fill="currentColor"
+                />
+                <path
+                  d="M5 10a7 7 0 0 0 14 0"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <line
+                  x1="12"
+                  y1="19"
+                  x2="12"
+                  y2="22"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <line
+                  x1="8"
+                  y1="22"
+                  x2="16"
+                  y2="22"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span class="ptt-label">Hold to Speak</span>
+            </button>
+            <div class="ptt-hint">Push-to-talk · release when finished</div>
+          </div>
+        </div>
       </div>
+
+      <!-- RIGHT: Debug / insights panel -->
+      <aside id="debug-panel">
+        <div class="panel-title">Session Insights</div>
+
+        <div class="metrics-row">
+          <div class="metric-card">
+            <div class="metric-val" id="metric-turns">0</div>
+            <div class="metric-label">turns</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val" id="metric-duration">0m</div>
+            <div class="metric-label">duration</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val" id="metric-fsrs">0</div>
+            <div class="metric-label">due words</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val" id="metric-version">v0</div>
+            <div class="metric-label">core ver.</div>
+          </div>
+        </div>
+
+        <div class="insight-section">
+          <div class="insight-label">
+            Words due for review
+            <span class="badge" id="fsrs-count">0</span>
+          </div>
+          <div id="debug-fsrs" class="fsrs-chips">
+            <span class="fsrs-empty">No items due</span>
+          </div>
+        </div>
+
+        <div class="insight-section">
+          <details class="accordion">
+            <summary class="insight-label">
+              Learner Core
+              <span class="badge" id="learner-version">v0</span>
+            </summary>
+            <pre id="debug-learner" class="code-block">—</pre>
+          </details>
+        </div>
+
+        <div class="insight-section">
+          <details class="accordion">
+            <summary class="insight-label">
+              Tutor Core
+              <span class="badge" id="tutor-version">v0</span>
+            </summary>
+            <pre id="debug-tutor" class="code-block">—</pre>
+          </details>
+        </div>
+
+        <div class="insight-section">
+          <details class="accordion">
+            <summary class="insight-label">System Prompt</summary>
+            <pre id="debug-prompt" class="code-block">—</pre>
+          </details>
+        </div>
+
+        <div
+          class="insight-section"
+          id="compaction-result-section"
+          style="display: none"
+        >
+          <div class="insight-label">
+            Compaction Result
+            <span class="badge badge-green">done</span>
+          </div>
+          <div id="compaction-status" class="compaction-note"></div>
+          <details class="accordion" open>
+            <summary class="insight-label" style="margin-top: 10px">
+              Core Diff
+            </summary>
+            <div id="compaction-diff" class="diff-container"></div>
+          </details>
+          <details class="accordion">
+            <summary class="insight-label" style="margin-top: 10px">
+              FSRS Updates
+            </summary>
+            <pre id="compaction-fsrs" class="code-block">—</pre>
+          </details>
+        </div>
+      </aside>
     </div>
 
-    <aside id="debug-panel">
-      <h2>Session State</h2>
-
-      <section class="debug-section">
-        <h3>Metrics</h3>
-        <div id="debug-metrics" class="debug-content">Not connected</div>
-      </section>
-
-      <section class="debug-section">
-        <h3>FSRS Items Due <span id="fsrs-count">0</span></h3>
-        <div id="debug-fsrs" class="debug-content">—</div>
-      </section>
-
-      <section class="debug-section">
-        <details>
-          <summary>Learner Core <span id="learner-version"></span></summary>
-          <pre id="debug-learner" class="debug-content">—</pre>
-        </details>
-      </section>
-
-      <section class="debug-section">
-        <details>
-          <summary>Tutor Core <span id="tutor-version"></span></summary>
-          <pre id="debug-tutor" class="debug-content">—</pre>
-        </details>
-      </section>
-
-      <section class="debug-section">
-        <details>
-          <summary>System Prompt</summary>
-          <pre id="debug-prompt" class="debug-content">—</pre>
-        </details>
-      </section>
-
-      <section class="debug-section" id="compaction-result-section" style="display: none;">
-        <h3>Compaction Result</h3>
-        <div id="compaction-status" class="debug-content"></div>
-        <details open>
-          <summary>Core Diff</summary>
-          <div id="compaction-diff" class="debug-content"></div>
-        </details>
-        <details>
-          <summary>FSRS Updates</summary>
-          <pre id="compaction-fsrs" class="debug-content">—</pre>
-        </details>
-      </section>
-    </aside>
-  </div>
-
-  <script src="https://unpkg.com/livekit-client@2/dist/livekit-client.umd.js"></script>
-  <script src="app.js"></script>
-</body>
+    <script src="https://unpkg.com/livekit-client@2/dist/livekit-client.umd.js"></script>
+    <script src="app.js"></script>
+  </body>
 </html>
