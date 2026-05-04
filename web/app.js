@@ -13,13 +13,22 @@ const btnPtt = document.getElementById('ptt-btn');
 const btnEnd = document.getElementById('end-session-btn');
 const btnRefresh = document.getElementById('debug-refresh-btn');
 const transcriptEl = document.getElementById('transcript-panel');
+const mainPanel = document.getElementById('main-panel');
+const emptyState = document.getElementById('empty-state');
 const agentStateEl = document.getElementById('agent-state');
 const connStatus = document.getElementById('connection-status');
+const sessionDot = document.getElementById('session-dot');
+const agentStatePill = document.getElementById('agent-state-pill');
+const sofiaOrb = document.getElementById('sofia-orb');
+const sofiaPulse = document.getElementById('sofia-pulse');
 
 // debug panel
-const debugMetrics = document.getElementById('debug-metrics');
 const debugFsrs = document.getElementById('debug-fsrs');
 const fsrsCount = document.getElementById('fsrs-count');
+const metricTurns = document.getElementById('metric-turns');
+const metricDuration = document.getElementById('metric-duration');
+const metricFsrs = document.getElementById('metric-fsrs');
+const metricVersion = document.getElementById('metric-version');
 const debugLearner = document.getElementById('debug-learner');
 const debugTutor = document.getElementById('debug-tutor');
 const learnerVer = document.getElementById('learner-version');
@@ -29,6 +38,59 @@ const compSection = document.getElementById('compaction-result-section');
 const compStatus = document.getElementById('compaction-status');
 const compDiff = document.getElementById('compaction-diff');
 const compFsrs = document.getElementById('compaction-fsrs');
+
+let avatarInteractionTimer = null;
+let avatarWindTimer = null;
+
+function enterConversationScreen() {
+  mainPanel?.classList.add('conversation-active');
+}
+
+function isConversationActive() {
+  return mainPanel?.classList.contains('conversation-active') ?? false;
+}
+
+function pressSofiaAvatar() {
+  sofiaOrb?.classList.add('interacting');
+}
+
+function releaseSofiaAvatar() {
+  sofiaOrb?.classList.remove('interacting');
+}
+
+function tapSofiaAvatar() {
+  pressSofiaAvatar();
+  triggerSofiaWindSpin();
+  clearTimeout(avatarInteractionTimer);
+  avatarInteractionTimer = setTimeout(releaseSofiaAvatar, 260);
+}
+
+function triggerSofiaWindSpin() {
+  if (!sofiaOrb) return;
+  clearTimeout(avatarWindTimer);
+  sofiaOrb.classList.remove('wind-spin');
+  void sofiaOrb.offsetWidth;
+  sofiaOrb.classList.add('wind-spin');
+  avatarWindTimer = setTimeout(() => {
+    sofiaOrb.classList.remove('wind-spin');
+  }, 1800);
+}
+
+sofiaOrb?.addEventListener('pointerdown', (event) => {
+  pressSofiaAvatar();
+  sofiaOrb.setPointerCapture?.(event.pointerId);
+});
+
+sofiaOrb?.addEventListener('pointerup', releaseSofiaAvatar);
+sofiaOrb?.addEventListener('pointercancel', releaseSofiaAvatar);
+sofiaOrb?.addEventListener('pointerleave', releaseSofiaAvatar);
+sofiaOrb?.addEventListener('blur', releaseSofiaAvatar);
+sofiaOrb?.addEventListener('click', triggerSofiaWindSpin);
+sofiaOrb?.addEventListener('keydown', (event) => {
+  if (event.key !== 'Enter' && event.key !== ' ') return;
+  event.preventDefault();
+  tapSofiaAvatar();
+});
 
 // ── Mock data ─────────────────────────────────────────────────────────────
 const MOCK_LEARNER_CORE = {
@@ -113,6 +175,7 @@ btnConnect.addEventListener('click', async() => {
         btnRefresh.disabled = false;
         connStatus.classList.add('connected');
         connStatus.textContent = 'Connected';
+        sessionDot?.classList.add('live');
         setStatus('Waiting for Sofía…', 'idle');
 
         setTimeout(refreshSnapshot, 2000);
@@ -135,6 +198,7 @@ function connectMock() {
     btnRefresh.disabled = false;
     connStatus.classList.add('connected');
     connStatus.textContent = 'Connected (mock)';
+    sessionDot?.classList.add('live');
     setStatus('Sofía is ready', 'idle');
 
     setTimeout(() => {
@@ -155,9 +219,12 @@ btnPtt.addEventListener('touchend', e => { e.preventDefault();
 
 function startRecording() {
     if (!connected || recording) return;
+    if (!isConversationActive()) {
+        enterConversationScreen();
+        return;
+    }
     recording = true;
     btnPtt.classList.add('active');
-    btnPtt.textContent = 'Listening…';
     setStatus('Listening…', 'listening');
 
     if (!MOCK_MODE && room) {
@@ -171,7 +238,6 @@ function stopRecording() {
     if (!connected || !recording) return;
     recording = false;
     btnPtt.classList.remove('active');
-    btnPtt.textContent = 'Hold to Speak';
 
     if (MOCK_MODE) {
         handleMockTurn();
@@ -275,7 +341,7 @@ function renderSnapshot(snap) {
     learnerVer.textContent = `v${snap.learnerCore?.version ?? 0}`;
     tutorVer.textContent = `v${snap.tutorCore?.version ?? 0}`;
 
-    if (snap.fsrsDueItems ? .length > 0) {
+    if (snap.fsrsDueItems?.length > 0) {
         fsrsCount.textContent = snap.fsrsDueItems.length;
         debugFsrs.innerHTML = snap.fsrsDueItems.map(item => `
       <div class="fsrs-item">
@@ -290,8 +356,12 @@ function renderSnapshot(snap) {
 
   const started = snap.sessionStartedAt ? new Date(snap.sessionStartedAt) : null;
   const mins = started ? Math.round((Date.now() - started.getTime()) / 60000) : 0;
-  debugMetrics.textContent =
-    `Turns: ${snap.turnCount || 0}\nDuration: ${mins} min\nFSRS due: ${snap.fsrsDueItems?.length || 0}\nCore version: v${snap.learnerCore?.version ?? 0}`;
+  updateMetrics({
+    turns: snap.turnCount || 0,
+    duration: `${mins}m`,
+    fsrs: snap.fsrsDueItems?.length || 0,
+    version: snap.learnerCore?.version ?? 0,
+  });
 }
 
 function renderMockDebug() {
@@ -317,8 +387,19 @@ function renderMockDebug() {
 }
 
 function updateMockMetrics() {
-  debugMetrics.textContent =
-    `Turns: ${mockTurnCount}\nDuration: ${mockTurnCount} min (mock)\nFSRS due: ${MOCK_FSRS_ITEMS.length}\nCore version: v${MOCK_LEARNER_CORE.version}`;
+  updateMetrics({
+    turns: mockTurnCount,
+    duration: `${mockTurnCount}m`,
+    fsrs: MOCK_FSRS_ITEMS.length,
+    version: MOCK_LEARNER_CORE.version,
+  });
+}
+
+function updateMetrics({ turns, duration, fsrs, version }) {
+  metricTurns.textContent = String(turns);
+  metricDuration.textContent = duration;
+  metricFsrs.textContent = String(fsrs);
+  metricVersion.textContent = `v${version}`;
 }
 
 function showMockCompactionResult() {
@@ -364,6 +445,7 @@ function showCompactionResult(result) {
 // ── Transcript ────────────────────────────────────────────────────────────
 function appendTurn(role, text) {
   if (!text?.trim()) return;
+  emptyState?.remove();
   const div = document.createElement('div');
   div.className = `transcript-entry ${role}`;
   div.innerHTML = `<div class="speaker">${role === 'tutor' ? 'Sofía' : 'You'}</div><div>${esc(text)}</div>`;
@@ -398,6 +480,7 @@ function wireRoomEvents(RoomEvent, Track) {
     connected = false;
     connStatus.textContent = 'Disconnected';
     connStatus.classList.remove('connected');
+    sessionDot?.classList.remove('live');
     setStatus('Disconnected', 'idle');
     btnPtt.disabled = true;
     btnEnd.disabled = true;
@@ -429,6 +512,20 @@ function getLocalAudioTrack() {
 function setStatus(text, stateClass) {
   agentStateEl.textContent = text;
   agentStateEl.className = `state-${stateClass}`;
+  agentStatePill?.classList.remove(
+    'initializing',
+    'idle',
+    'listening',
+    'thinking',
+    'speaking',
+  );
+  agentStatePill?.classList.add(stateClass);
+  sofiaOrb?.classList.remove('listening', 'speaking');
+  sofiaPulse?.classList.remove('active');
+  if (stateClass === 'listening' || stateClass === 'speaking') {
+    sofiaOrb?.classList.add(stateClass);
+    sofiaPulse?.classList.add('active');
+  }
 }
 
 function esc(str) {

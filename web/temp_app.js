@@ -393,29 +393,29 @@ function renderCompactionResult(data) {
     diffs.push(
         makeDiff(
             'CEFR level',
-            pre.learner.proficiency ? .cefr_level,
-            post.learner.proficiency ? .cefr_level,
+            pre.learner.proficiency?.cefr_level,
+            post.learner.proficiency?.cefr_level,
         ),
     );
     diffs.push(
         makeDiff(
             'Interests',
-            JSON.stringify(pre.learner.learning_profile ? .interests || []),
-            JSON.stringify(post.learner.learning_profile ? .interests || []),
+            JSON.stringify(pre.learner.learning_profile?.interests || []),
+            JSON.stringify(post.learner.learning_profile?.interests || []),
         ),
     );
     diffs.push(
         makeDiff(
             'Active vocab',
-            pre.learner.vocabulary ? .active_count,
-            post.learner.vocabulary ? .active_count,
+            pre.learner.vocabulary?.active_count,
+            post.learner.vocabulary?.active_count,
         ),
     );
     diffs.push(
         makeDiff(
             'Comfort zones',
-            JSON.stringify(pre.learner.vocabulary ? .comfort_zones || []),
-            JSON.stringify(post.learner.vocabulary ? .comfort_zones || []),
+            JSON.stringify(pre.learner.vocabulary?.comfort_zones || []),
+            JSON.stringify(post.learner.vocabulary?.comfort_zones || []),
         ),
     );
     diffs.push(

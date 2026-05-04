@@ -10,11 +10,9 @@ const PORT = Number(process.env.PORT) || 3000;
 const LIVEKIT_API_KEY = process.env.LIVEKIT_API_KEY!;
 const LIVEKIT_API_SECRET = process.env.LIVEKIT_API_SECRET!;
 const LIVEKIT_URL = process.env.LIVEKIT_URL!;
-
-if (!LIVEKIT_API_KEY || !LIVEKIT_API_SECRET || !LIVEKIT_URL) {
-  console.error('Missing LIVEKIT_API_KEY, LIVEKIT_API_SECRET, or LIVEKIT_URL');
-  process.exit(1);
-}
+const hasLiveKitConfig = Boolean(
+  LIVEKIT_API_KEY && LIVEKIT_API_SECRET && LIVEKIT_URL,
+);
 
 const app = express();
 
@@ -23,6 +21,14 @@ app.use(express.static(join(__dirname, '..', 'web')));
 
 // Token endpoint
 app.get('/api/token', async (req, res) => {
+  if (!hasLiveKitConfig) {
+    res.status(503).json({
+      error:
+        'Missing LIVEKIT_API_KEY, LIVEKIT_API_SECRET, or LIVEKIT_URL. Use /?mock for local no-key mode.',
+    });
+    return;
+  }
+
   const room = (req.query.room as string) || 'habla-session';
   const identity = (req.query.identity as string) || 'learner';
 
@@ -47,10 +53,22 @@ app.get('/api/token', async (req, res) => {
 
 // LiveKit URL endpoint (for client reference)
 app.get('/api/livekit-url', (_req, res) => {
+  if (!hasLiveKitConfig) {
+    res.status(503).json({
+      error:
+        'Missing LIVEKIT_API_KEY, LIVEKIT_API_SECRET, or LIVEKIT_URL. Use /?mock for local no-key mode.',
+    });
+    return;
+  }
+
   res.json({ url: LIVEKIT_URL });
 });
 
 app.listen(PORT, () => {
   console.log(`Token server running on http://localhost:${PORT}`);
-  console.log(`LiveKit URL: ${LIVEKIT_URL}`);
+  if (hasLiveKitConfig) {
+    console.log(`LiveKit URL: ${LIVEKIT_URL}`);
+  } else {
+    console.log('LiveKit config missing; static app and /?mock are available.');
+  }
 });

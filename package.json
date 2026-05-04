@@ -7,12 +7,12 @@
         "node": ">=22.0.0"
     },
     "scripts": {
-        "build": "tsc",
-        "agent": "tsx src/agent.ts dev",
-        "server": "tsx src/token-server.ts",
-        "test-compaction": "tsx scripts/test-compaction.ts",
-        "test-evolution": "tsx scripts/test-evolution.ts",
-        "test-prompt": "tsx scripts/test-prompt-builder.ts"
+        "build": "node node_modules/typescript/bin/tsc",
+        "agent": "node node_modules/tsx/dist/cli.mjs src/agent.ts dev",
+        "server": "node node_modules/tsx/dist/cli.mjs src/token-server.ts",
+        "test-compaction": "node node_modules/tsx/dist/cli.mjs scripts/test-compaction.ts",
+        "test-evolution": "node node_modules/tsx/dist/cli.mjs scripts/test-evolution.ts",
+        "test-prompt": "node node_modules/tsx/dist/cli.mjs scripts/test-prompt-builder.ts"
     },
     "dependencies": {
         "@anthropic-ai/sdk": "^0.89.0",
