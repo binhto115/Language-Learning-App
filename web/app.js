@@ -7,6 +7,8 @@ let connected = false;
 let recording = false;
 let mockTurnCount = 0;
 
+
+// changes
 // ── DOM refs ──────────────────────────────────────────────────────────────
 const btnConnect = document.getElementById('connect-btn');
 const btnPtt = document.getElementById('ptt-btn');
